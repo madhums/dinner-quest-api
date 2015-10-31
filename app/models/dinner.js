@@ -12,10 +12,10 @@ var Schema = mongoose.Schema;
  */
 
 var DinnerSchema = new Schema({
-  title: {type : String, default : '', trim : true},
-  body: {type : String, default : '', trim : true},
-  image: {type : String, default : '', trim : true},
   location: {type : String, default : '', trim : true},
+  attendees: {type : Number, default : 2},
+  fee: {type : Number, default : 0},
+  recepie: {},
   readyAt: {type : Date, default : Date.now},
 
   user: {type : Schema.ObjectId, ref : 'User'},

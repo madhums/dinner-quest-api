@@ -8,9 +8,7 @@
 
 var users = require('users');
 var dinners = require('dinners');
-// var comments = require('comments');
-// var tags = require('tags');
-// var auth = require('./middlewares/authorization');
+var auth = require('./middlewares/authorization').authenticate;
 
 /**
  * Route middlewares
@@ -34,11 +32,11 @@ module.exports = function (app, passport) {
 
   // dinner routes
   app.param('id', dinners.load);
-  app.get('/dinners', dinners.index);
-  app.post('/dinners', dinners.create);
-  app.get('/dinners/:id', dinners.show);
-  app.put('/dinners/:id', dinners.update);
-  app.delete('/dinners/:id', dinners.destroy);
+  app.get('/dinners', auth, dinners.index);
+  app.post('/dinners', auth, dinners.create);
+  app.get('/dinners/:id', auth, dinners.show);
+  app.put('/dinners/:id', auth, dinners.update);
+  app.delete('/dinners/:id', auth, dinners.destroy);
 
   /**
    * Error handling
