@@ -12,7 +12,10 @@ var Schema = mongoose.Schema;
  */
 
 var DinnerSchema = new Schema({
-  location: {type : String, default : '', trim : true},
+  location: {
+    type: [Number],
+    index: '2d'
+  },
   attendees: {type : Number, default : 2},
   fee: {type : Number, default : 0},
   recepie: {},
@@ -39,7 +42,7 @@ DinnerSchema.statics = {
 
   load: function (id, cb) {
     this.findOne({ _id : id })
-      .populate('user', 'name email username')
+      .populate('user', 'facebook')
       .exec(cb);
   },
 

@@ -47,6 +47,7 @@ exports.index = function (req, res){
 
 exports.create = function (req, res) {
   var dinner = new Dinner(req.body);
+  dinner.location.type = req.body.location;
   dinner.user = req.user;
   dinner.save(function (err) {
     if (err) return res.status(400).send();
