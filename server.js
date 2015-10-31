@@ -16,7 +16,7 @@ var passport = require('passport');
 var config = require('config');
 
 var app = express();
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 4000;
 
 // Connect to mongodb
 var connect = function () {
@@ -34,7 +34,7 @@ fs.readdirSync(join(__dirname, 'app/models')).forEach(function (file) {
 });
 
 // Bootstrap passport config
-require('./config/passport')(passport);
+// require('./config/passport')(passport);
 
 // Bootstrap application settings
 require('./config/express')(app, passport);

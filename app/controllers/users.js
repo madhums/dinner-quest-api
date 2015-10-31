@@ -6,6 +6,7 @@
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var utils = require('../../lib/utils');
+var extend = require('util')._extend;
 
 /**
  * Load
@@ -28,21 +29,17 @@ exports.load = function (req, res, next, id) {
  */
 
 exports.create = function (req, res) {
-  var user = new User(req.body);
-  user.provider = 'local';
-  user.save(function (err) {
-    if (err) {
-      return res.render('users/signup', {
-        errors: utils.errors(err.errors),
-        user: user,
-        title: 'Sign up'
-      });
-    }
+  var user = new User();
+  user.facebook = req.body;
 
-    // manually login the user once successfully signed up
-    req.logIn(user, function(err) {
-      if (err) req.flash('info', 'Sorry! We are not able to log you in!');
-      return res.redirect('/');
+  User.load({ criteria: { 'facebook.id' : req.body.id } }, function (err, _user) {
+    if (err) return res.status(400).json({ error: err });
+
+    if (!_user) _user = new User({ facebook: req.body });
+    else  _user = extend(_user, { facebook: req.body });
+    _user.save(function (err) {
+      if (err) return res.status(400).json({ error: err });
+      res.json(_user);
     });
   });
 };
@@ -53,62 +50,6 @@ exports.create = function (req, res) {
 
 exports.show = function (req, res) {
   var user = req.profile;
-  res.render('users/show', {
-    title: user.name,
-    user: user
-  });
+  res.json(user);
 };
 
-exports.signin = function (req, res) {};
-
-/**
- * Auth callback
- */
-
-exports.authCallback = login;
-
-/**
- * Show login form
- */
-
-exports.login = function (req, res) {
-  res.render('users/login', {
-    title: 'Login'
-  });
-};
-
-/**
- * Show sign up form
- */
-
-exports.signup = function (req, res) {
-  res.render('users/signup', {
-    title: 'Sign up',
-    user: new User()
-  });
-};
-
-/**
- * Logout
- */
-
-exports.logout = function (req, res) {
-  req.logout();
-  res.redirect('/login');
-};
-
-/**
- * Session
- */
-
-exports.session = login;
-
-/**
- * Login
- */
-
-function login (req, res) {
-  var redirectTo = req.session.returnTo ? req.session.returnTo : '/';
-  delete req.session.returnTo;
-  res.redirect(redirectTo);
-};

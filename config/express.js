@@ -30,10 +30,41 @@ var env = process.env.NODE_ENV || 'development';
 
 module.exports = function (app, passport) {
 
+
   // Compression middleware (should be placed before express.static)
   app.use(compression({
     threshold: 512
   }));
+
+  // Allow all domains
+  app.use(function (req, res, next) {
+    var allowedHeaders = [
+      'Content-Type',
+      'auth_token',
+      'X-Auth-Token',
+      'X-Client-Name',
+      'X-Access-Token',
+      'X-Requested-With',
+      'Authorization'
+    ].join(',');
+
+    var allowedMethods = [
+      'GET',
+      'PUT',
+      'POST',
+      'OPTIONS',
+      'DELETE'
+    ].join(',');
+
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', allowedMethods);
+    res.header('Access-Control-Allow-Headers', allowedHeaders);
+    // Intercept OPTIONS method
+    if ('OPTIONS' === req.method) {
+      return res.send(204);
+    }
+    next();
+  });
 
   // Static files middleware
   app.use(express.static(config.root + '/public'));
@@ -111,14 +142,4 @@ module.exports = function (app, passport) {
   // should be declared after session and flash
   app.use(helpers(pkg.name));
 
-  // adds CSRF support
-  if (process.env.NODE_ENV !== 'test') {
-    app.use(csrf());
-
-    // This could be moved to view-helpers :-)
-    app.use(function (req, res, next) {
-      res.locals.csrf_token = req.csrfToken();
-      next();
-    });
-  }
 };
