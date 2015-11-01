@@ -53,6 +53,7 @@ exports.index = function (req, res){
 
 exports.create = function (req, res) {
   var dinner = new Dinner(req.body);
+  if (!dinner.location) dinner.location = {};
   dinner.location.type = req.body.location;
   dinner.user = req.user;
   dinner.save(function (err) {
