@@ -14,8 +14,15 @@ var extend = require('util')._extend;
 
 exports.load = function (req, res, next, id) {
   var options = {
-    criteria: { _id : id }
+    criteria: {}
   };
+
+  if (req.headers['x-auth-token']) {
+    options.criteria['facebook.id'] = req.headers['x-auth-token']
+  } else {
+    options.criteria = { _id: id };
+  }
+
   User.load(options, function (err, user) {
     if (err) return next(err);
     if (!user) return next(new Error('Failed to load User ' + id));
