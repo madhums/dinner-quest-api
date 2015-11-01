@@ -32,11 +32,17 @@ exports.index = function (req, res){
   var perPage = 30;
   var options = {
     perPage: perPage,
-    page: page
+    page: page,
+    lean: true
   };
 
   Dinner.list(options, function (err, dinners) {
     if (err) return res.status(400).send();
+    dinners = dinners.map(function (dinner) {
+      dinner.distance = Math.floor(Math.random() * 6) + 1;
+      return dinner;
+    });
+
     res.json(dinners);
   });
 };

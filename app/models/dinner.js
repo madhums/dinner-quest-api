@@ -57,12 +57,14 @@ DinnerSchema.statics = {
   list: function (options, cb) {
     var criteria = options.criteria || {}
 
-    this.find(criteria)
+    var list = this.find(criteria)
       .populate('user', 'name username')
       .sort({ 'createdAt': -1 }) // sort by date
       .limit(options.perPage)
       .skip(options.perPage * options.page)
-      .exec(cb);
+
+    if (options.lean) list.lean().exec(cb)
+    else list.exec(cb)
   }
 }
 
